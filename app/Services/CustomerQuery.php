@@ -19,13 +19,31 @@ class CustomerQuery {
         'postalCode' => 'postal_code'
     ];
     
-    protected $operators = [
+    protected $operatorMap = [
         'eq' => '=',
         'lt' => '<',
         'gt' => '>'
     ];
 
     public function transform(Request $request) {
-        return $request->all();
+        $eloQuery = [];
+
+        foreach($this->safeParams as $parm => $operators) {
+            $query = $request->$parm;
+
+            if(!isset($query)) {
+                continue;
+            }
+
+            $column = $this->columnMap[$parm] ?? $parm;
+
+            foreach ($operators as $operator) {
+                if (isset($query[$operator])) {
+                    $eloQuery[] = [$column, $this->operatorMap[$operator], $query[$operator]];
+                }
+            }
+        }
+
+        return $eloQuery;
     }
 }
