@@ -8,15 +8,25 @@ use App\Models\Invoice;
 use App\Http\Requests\StoreInvoiceRequest;
 use App\Http\Requests\UpdateInvoiceRequest;
 use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use App\Filters\InvoicesQuery;
 
 class InvoiceController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        return new InvoiceCollection(Invoice::all());
+        $filter = new InvoicesQuery();
+        $queryItems = $filter->transform($request);
+
+        if (count($queryItems) == 0) {
+            return new InvoiceCollection(Invoice::all());
+        }
+        else {
+            return new InvoiceCollection(Invoice::where($queryItems)->get());
+        }
     }
 
     /**
