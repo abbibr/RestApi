@@ -21,11 +21,14 @@ class CustomerController extends Controller
         $filter = new CustomerQuery();
         $queryItems = $filter->transform($request);
 
-        if (count($queryItems) == 0) {
-            return new CustomerCollection(Customer::all());
+        $includeInvoices = $request->invoices;
+        $customers = Customer::where($queryItems);
+
+        if ($includeInvoices == 'true') {
+            return new CustomerCollection($customers->with('invoices')->get());
         }
         else {
-            return new CustomerCollection(Customer::where($queryItems)->get());
+            return new CustomerCollection($customers->get());
         }
     }
 
@@ -50,7 +53,14 @@ class CustomerController extends Controller
      */
     public function show(Customer $customer)
     {
-        return new CustomerResource($customer);
+        $queryItems = request()->invoices;
+        
+        if($queryItems == 'true') {
+            return new CustomerResource($customer->load('invoices'));
+        }
+        else {
+            return new CustomerResource($customer);
+        }
     }
 
     /**
