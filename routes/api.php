@@ -10,10 +10,14 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// API Customers
-Route::apiResource('/customers', CustomerController::class);
 
-// API Invoices
-Route::apiResource('/invoices', InvoiceController::class);
+Route::middleware('auth:sanctum')->group(function () {
+    // API Customers
+    Route::apiResource('/customers', CustomerController::class);
 
-Route::post('/invoices/bulkStore', [InvoiceController::class, 'bulkStore'])->name('invoices.bulk.store');
+    // API Invoices
+    Route::apiResource('/invoices', InvoiceController::class);
+
+    // Insert Multiple Data
+    Route::post('/invoices/bulkStore', [InvoiceController::class, 'bulkStore'])->name('invoices.bulk.store'); 
+});
