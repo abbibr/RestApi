@@ -15,3 +15,5 @@ Route::apiResource('/customers', CustomerController::class);
 
 // API Invoices
 Route::apiResource('/invoices', InvoiceController::class);
+
+Route::post('/invoices/bulkStore', [InvoiceController::class, 'bulkStore'])->name('invoices.bulk.store');

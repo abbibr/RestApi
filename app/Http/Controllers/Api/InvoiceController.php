@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Requests\BulkStoreInvoiceRequest;
 use App\Http\Resources\Api\InvoiceCollection;
 use App\Http\Resources\Api\InvoiceResource;
 use App\Models\Invoice;
@@ -10,6 +11,7 @@ use App\Http\Requests\UpdateInvoiceRequest;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Filters\InvoicesQuery;
+use Illuminate\Support\Arr;
 
 class InvoiceController extends Controller
 {
@@ -22,7 +24,7 @@ class InvoiceController extends Controller
         $queryItems = $filter->transform($request);
 
         if (count($queryItems) == 0) {
-            return new InvoiceCollection(Invoice::all());
+            return new InvoiceCollection(Invoice::get());
         }
         else {
             return new InvoiceCollection(Invoice::where($queryItems)->get());
@@ -45,6 +47,16 @@ class InvoiceController extends Controller
         Invoice::create($request->all());
 
         return response()->json('success', 200);
+    }
+
+    public function bulkStore(BulkStoreInvoiceRequest $request) {
+        $bulk = collect($request->all())->map(function($arr, $key) {
+            return Arr::except($arr, ['customerId', 'billedDate', 'paidDate']);
+        });
+        
+        Invoice::insert($bulk->toArray());
+
+        return response()->json('Multiple data successfully inserted...', 200);
     }
 
     /**
