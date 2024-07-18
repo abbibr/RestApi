@@ -47,7 +47,7 @@ class CustomerController extends Controller
     {
         Customer::create($request->all());
 
-        return response()->json('success', 200);
+        return response()->json('successfully created...', 200);
     }
 
     /**
@@ -78,7 +78,9 @@ class CustomerController extends Controller
      */
     public function update(UpdateCustomerRequest $request, Customer $customer)
     {
-        //
+        $customer->update($request->all());
+
+        return response()->json('successfully updated...', 200);
     }
 
     /**
