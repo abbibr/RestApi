@@ -3,6 +3,8 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Str;
 
 class UpdateInvoiceRequest extends FormRequest
 {
@@ -11,7 +13,7 @@ class UpdateInvoiceRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +24,19 @@ class UpdateInvoiceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'customerId' => ['nullable'],
+            'amount' => ['nullable', 'numeric', 'between:10000,100000000'],
+            'status' => ['nullable', Rule::in(['B', 'V', 'P', 'b', 'v', 'p'])],
+            'billedDate' => ['nullable', 'date_format:Y-m-d H:i:s'],
+            'paidDate' => ['nullable', 'date_format:Y-m-d H:i:s']
         ];
+    }
+
+    protected function prepareForValidation() {
+        $this->merge([
+            'customer_id' => $this->customerId,
+            'billed_date' => $this->billedDate,
+            'paid_date' => $this->paidDate
+        ]);
     }
 }

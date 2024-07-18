@@ -68,7 +68,9 @@ class InvoiceController extends Controller
      */
     public function update(UpdateInvoiceRequest $request, Invoice $invoice)
     {
-        //
+        $invoice->update($request->all());
+
+        return response()->json('successfully updated...', 200);
     }
 
     /**
