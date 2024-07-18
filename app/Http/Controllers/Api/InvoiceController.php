@@ -42,7 +42,9 @@ class InvoiceController extends Controller
      */
     public function store(StoreInvoiceRequest $request)
     {
-        //
+        Invoice::create($request->all());
+
+        return response()->json('success', 200);
     }
 
     /**
